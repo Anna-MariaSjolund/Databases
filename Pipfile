@@ -9,6 +9,7 @@ pyodbc = "*"
 pandas = "*"
 ipykernel = "*"
 isbn-hyphenate = "*"
+pysimplegui = "*"
 
 [dev-packages]
 ipykernel = "*"
