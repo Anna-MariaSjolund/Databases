@@ -39,7 +39,7 @@ authors = db.Table('Authors', metadata, autoload=True, autoload_with=engine)
 
 book_data = []
 stock_data = []
-book_headings = ['ISBN13', 'Title', 'Firstname']
+book_headings = ['ISBN13', 'Title', 'Author']
 stock_headings = ['Store', 'Number in Stock']
 
 layout1 = [[sg.Text("Welcome to Paige Turner's Bookstore!", font=('Avenir Next', 30))],
@@ -48,11 +48,14 @@ layout1 = [[sg.Text("Welcome to Paige Turner's Bookstore!", font=('Avenir Next',
            [sg.Submit('Submit', font=('Avenir', 12)), sg.Button('Exit', key='Exit1', font=('Avenir', 12))]]
 
 layout2 = [[sg.Text('Found the following results:', font=('Avenir', 15))],
-           [sg.Table(key='-TABLE1-', values=book_data, headings=book_headings, font=('Avenir', 12), enable_events=True)], 
-           [sg.Table(key='-TABLE2-', values=stock_data, headings=stock_headings, font=('Avenir', 12))], 
+           [sg.Table(key='-TABLE1-', values=book_data, headings=book_headings, font=('Avenir', 12), justification='c', col_widths = [15, 30, 15], auto_size_columns=False,  enable_events=True)], 
+           [sg.Table(key='-TABLE2-', values=stock_data, headings=stock_headings, col_widths = [30, 30], auto_size_columns=False, font=('Avenir', 12), justification='c', num_rows=3, hide_vertical_scroll=True)], 
            [sg.Button('New Search', font=('Avenir', 12)), sg.Button('Exit', key='Exit2', font=('Avenir', 12))]]
-#auto_size_columns=False col_width
-layout = [[sg.Column(layout1, key='-COL1-'), sg.Column(layout2, visible=False, key='-COL2-')]]
+
+layout3 = [[sg.Text('Your search did not match any titles. Please try again or exit.', font=('Avenir', 15))],
+           [sg.Button('New Search', font=('Avenir', 12)), sg.Button('Exit', key='Exit2', font=('Avenir', 12))]]
+
+layout = [[sg.Column(layout1, key='-COL1-'), sg.Column(layout2, visible=False, key='-COL2-'), sg.Column(layout2, visible=False, key='-COL3-')]]
 
 window = sg.Window('Bookstore Search', layout, keep_on_top=True, element_justification='c')
 
@@ -102,15 +105,15 @@ while True:
             book_data.append(list(result))
 
         # Update layout
-        window['-TABLE1-'].update(values=book_data)
-
-
-
-
-
-        window[f'-COL{layout}-'].update(visible=False)
-        layout = layout + 1 
-        window[f'-COL{layout}-'].update(visible=True)
+        if len(book_data) == 0:
+            window[f'-COL{layout}-'].update(visible=False)
+            layout = layout + 2 
+            window[f'-COL{layout}-'].update(visible=True)            
+        else: 
+            window['-TABLE1-'].update(values=book_data)
+            window[f'-COL{layout}-'].update(visible=False)
+            layout = layout + 1 
+            window[f'-COL{layout}-'].update(visible=True)
 
     elif event == 'New Search': 
         window['-INPUT-'].update('')
